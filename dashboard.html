@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js CDN for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body">
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-badge">TF</span>
+            <h2>TaskFlow</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li id="menu-projects" class="active" onclick="window.showProjectsView()">📁 Projects</li>
+            <li id="menu-tasks" onclick="alert('Please open a project first to view tasks!')">✅ Tasks</li>
+            <li id="menu-reports" onclick="window.showReportsView()">📊 Reports</li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Header with Profile -->
+        <header class="dashboard-header">
+            <h1 id="page-header-title">Projects</h1>
+            <div class="user-profile">
+                <div class="avatar" id="user-initial">A</div>
+                <div class="user-info">
+                    <span class="user-name" id="user-display-name">User Name</span>
+                    <span class="user-email" id="user-display-email">user@email.com</span>
+                </div>
+                <button id="logout-btn" class="logout-icon-btn" title="Logout">🚪</button>
+            </div>
+        </header>
+
+        <!-- VIEW 1: PROJECTS VIEW (Default) -->
+        <div id="projects-view" class="view-container">
+            <div class="project-card-section">
+                <h3>Projects</h3>
+                <div class="project-input-row">
+                    <input type="text" id="project-title" placeholder="Enter project name...">
+                    <input type="date" id="project-date">
+                    <button id="add-project-btn" class="create-btn">+ Create</button>
+                </div>
+
+                <!-- Projects Cards Grid Container -->
+                <div class="projects-grid" id="projects-container"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: TASKS / KANBAN VIEW (Hidden by default) -->
+        <div id="tasks-view" class="view-container" style="display: none;">
+            <div class="project-card-section">
+                <div class="project-task-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="active-project-title" style="margin: 0; color: #0f172a;">Project Name</h2>
+                    <button onclick="window.showProjectsView()" class="back-btn">⬅ Back to Projects</button>
+                </div>
+                <div class="project-input-row" style="margin-top: 15px;">
+                    <input type="text" id="task-name" placeholder="Task Name...">
+                    <input type="text" id="task-desc" placeholder="Description...">
+                    <button id="add-task-btn" class="create-btn">+ Add Task</button>
+                </div>
+
+                <!-- Kanban Board with Drag & Drop Support -->
+                <div class="kanban-board-custom">
+                    <!-- To Do Column -->
+                    <div class="kanban-col" ondragover="allowDrop(event)" ondrop="drop(event, 'todo')">
+                        <div class="kanban-col-header todo-header">
+                            <span>To Do</span>
+                            <span class="task-count" id="todo-count">0</span>
+                        </div>
+                        <div class="task-list-box" id="todo-list"></div>
+                    </div>
+
+                    <!-- In Progress Column -->
+                    <div class="kanban-col" ondragover="allowDrop(event)" ondrop="drop(event, 'inprogress')">
+                        <div class="kanban-col-header inprogress-header">
+                            <span>In Progress</span>
+                            <span class="task-count" id="inprogress-count">0</span>
+                        </div>
+                        <div class="task-list-box" id="inprogress-list"></div>
+                    </div>
+
+                    <!-- Done Column -->
+                    <div class="kanban-col" ondragover="allowDrop(event)" ondrop="drop(event, 'done')">
+                        <div class="kanban-col-header done-header">
+                            <span>Done</span>
+                            <span class="task-count" id="done-count">0</span>
+                        </div>
+                        <div class="task-list-box" id="done-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: REPORTS / GRAPH VIEW (Hidden by default) -->
+        <div id="reports-view" class="view-container" style="display: none;">
+            <div class="project-card-section">
+                <div class="reports-top-bar">
+                    <h2>Reports & Analytics</h2>
+                    <div class="reports-filter-box">
+                        <select id="report-project-select" onchange="window.filterReportsByProject(this.value)">
+                            <option value="all">All Projects</option>
+                        </select>
+                    </div>
+                </div>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Visual breakdown of tasks based on selected project.</p>
+                
+                <div class="reports-grid">
+                    <!-- Bar Chart Card -->
+                    <div class="report-card">
+                        <h3>Tasks Status Overview (Bar Chart)</h3>
+                        <div class="chart-container">
+                            <canvas id="taskBarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart Card -->
+                    <div class="report-card">
+                        <h3>Task Distribution (Pie Chart)</h3>
+                        <div class="chart-container" style="max-width: 350px; margin: 0 auto;">
+                            <canvas id="taskPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="js/tasks.js"></script>
+    <script>
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
+        function drop(ev, newStatus) {
+            ev.preventDefault();
+            const taskId = ev.dataTransfer.getData("text/plain");
+            if (taskId && window.updateTaskStatusByDrag) {
+                window.updateTaskStatusByDrag(taskId, newStatus);
+            }
+        }
+    </script>
+</body>
+</html>
