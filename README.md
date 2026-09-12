@@ -13,6 +13,6 @@ A modern, responsive, and feature-rich web-based project and task management app
 
 ## 🛠️ Tech Stack
 
-* **Frontend**: HTML5, CSS3, JavaScript (ES Modules)
+* **Frontend**: HTML5, CSS3, JavaScript 
 * **Backend & Database**: Firebase Authentication & Firebase Realtime Database (v12.19.0 via CDN)
-* **Libraries**: Chart.js for data visualization
+
